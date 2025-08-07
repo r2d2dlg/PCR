@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ofertas - AutoDealer Premium</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1>AutoDealer Premium</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="inventory.html">Inventario</a></li>
+                    <li><a href="analysis.html">Análisis</a></li>
+                    <li><a href="offer.html">Calculadora de Ofertas</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <h2>Calculadora de Precio de Oferta</h2>
+            <div class="offer-calculator-grid">
+                <div class="form-widget">
+                    <h3>Datos del Vehículo</h3>
+                    <div id="offerForm">
+                        <div class="form-input">
+                            <label for="brandInput">Marca:</label>
+                            <input type="text" id="brandInput" value="Toyota">
+                        </div>
+                        <div class="form-input">
+                            <label for="modelInput">Modelo:</label>
+                            <input type="text" id="modelInput" value="Corolla">
+                        </div>
+                        <div class="form-input">
+                            <label for="yearInput">Año:</label>
+                            <input type="number" id="yearInput" value="2022">
+                        </div>
+                        <div class="form-input">
+                            <label for="salesPriceInput">Precio de Venta Deseado ($):</label>
+                            <input type="number" id="salesPriceInput" value="25000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-widget">
+                    <h3>Parámetros Financieros</h3>
+                    <div id="configForm">
+                        <div class="form-input">
+                            <label for="dailyHoldingCostInput">Costo de Inventario Diario ($):</label>
+                            <input type="number" id="dailyHoldingCostInput" value="5">
+                        </div>
+                        <div class="form-input">
+                            <label for="salesCommissionInput">Comisión de Venta (%):</label>
+                            <input type="number" id="salesCommissionInput" value="10">
+                        </div>
+                        <div class="form-input">
+                            <label for="reconditioningCostInput">Costos de Reacondicionamiento ($):</label>
+                            <input type="number" id="reconditioningCostInput" value="500">
+                        </div>
+                        <div class="form-input">
+                            <label for="desiredProfitMarginInput">Margen de Ganancia Deseado (%):</label>
+                            <input type="number" id="desiredProfitMarginInput" value="15">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-widget full-width">
+                    <button class="submit-btn" id="calculateOfferBtn" style="width: 100%; padding: 1rem;">Calcular Oferta Sugerida</button>
+                </div>
+
+                <div id="offerResult" class="kpi-card" style="display: none; grid-column: 1 / -1;">
+                    <h4>Precio de Oferta Sugerido</h4>
+                    <div class="kpi-value" id="suggestedOfferPrice"></div>
+                    <div id="offerBreakdown"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="offer.js"></script>
+</body>
+</html>

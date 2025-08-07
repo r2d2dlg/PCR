@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de BI - AutoDealer Premium</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1>AutoDealer Premium</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="inventory.html">Inventario</a></li>
+                    <li><a href="analysis.html">Análisis</a></li>
+                    <li><a href="offer.html">Calculadora de Ofertas</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <h2>Dashboard de Business Intelligence</h2>
+            <div class="time-filters">
+                <button class="filter-btn active" data-period="1m">Último Mes</button>
+                <button class="filter-btn" data-period="3m">Últimos 3 Meses</button>
+                <button class="filter-btn" data-period="6m">Últimos 6 Meses</button>
+                <button class="filter-btn" data-period="12m">Último Año</button>
+            </div>
+            <div class="dashboard-grid">
+                <div class="chart-widget full-width">
+                    <h3>Ventas por Marca</h3>
+                    <canvas id="brandChart"></canvas>
+                </div>
+                <div class="chart-widget">
+                    <h3>Ventas por Modelo (Top 10)</h3>
+                    <canvas id="modelChart"></canvas>
+                </div>
+                <div class="chart-widget">
+                    <h3>Ventas por Rango de Precio</h3>
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="analysis.js"></script>
+</body>
+</html>

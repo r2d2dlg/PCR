@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "instanceId": "car-dealership-chatbot"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "car-chatbot-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message_type }}",
+              "operation": "equal",
+              "value2": "start"
+            }
+          ]
+        }
+      },
+      "id": "if-start-conversation",
+      "name": "If Start Conversation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $parameter.api_base_url }}/api/webhooks/n8n/chatbot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "start_conversation"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id || $jmespath($json, 'headers.\"x-session-id\"') || uuid() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "start-conversation-api",
+      "name": "Start Conversation API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message_type }}",
+              "operation": "equal",
+              "value2": "search"
+            }
+          ]
+        }
+      },
+      "id": "if-search-request",
+      "name": "If Search Request",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $parameter.api_base_url }}/api/webhooks/n8n/chatbot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "natural_search"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "user_message",
+              "value": "={{ $json.user_message }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.client_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "natural-search-api",
+      "name": "Natural Search API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message_type }}",
+              "operation": "equal",
+              "value2": "lead_capture"
+            }
+          ]
+        }
+      },
+      "id": "if-lead-capture",
+      "name": "If Lead Capture",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "url": "={{ $parameter.api_base_url }}/api/webhooks/n8n/chatbot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "capture_lead"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "user_data",
+              "value": "={{ $json.user_data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "capture-lead-api",
+      "name": "Capture Lead API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format cars for chatbot display\nconst data = $input.all();\nconst response = data[0].json;\n\nif (response.success && response.data.cars) {\n  const cars = response.data.cars;\n  \n  let message = response.data.message || `Encontré ${cars.length} vehículos:`;\n  \n  const formattedCars = cars.map(car => ({\n    title: `${car.brand} ${car.model} ${car.year}`,\n    price: `$${car.price.toLocaleString()}`,\n    details: `🚗 ${car.body_type} | 🎨 ${car.color} | 📏 ${car.mileage.toLocaleString()} km`,\n    description: car.description,\n    id: car.id\n  }));\n  \n  return [{\n    json: {\n      message: message,\n      cars: formattedCars,\n      total_results: cars.length,\n      session_id: response.session_id,\n      response_type: \"car_list\"\n    }\n  }];\n} else {\n  return [{\n    json: {\n      message: \"No encontré vehículos que coincidan exactamente. ¿Te gustaría ajustar los criterios?\",\n      suggestions: [\"Aumentar presupuesto\", \"Cambiar tipo\", \"Ver más colores\"],\n      session_id: response.session_id,\n      response_type: \"no_results\"\n    }\n  }];\n}"
+      },
+      "id": "format-search-results",
+      "name": "Format Search Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format lead capture response\nconst data = $input.all();\nconst response = data[0].json;\n\nif (response.success && response.data.client) {\n  const client = response.data.client;\n  \n  return [{\n    json: {\n      message: response.data.message,\n      client_name: client.name,\n      client_id: client.id,\n      session_id: response.session_id,\n      response_type: \"lead_captured\",\n      follow_up: response.data.follow_up\n    }\n  }];\n} else {\n  return [{\n    json: {\n      message: \"Hubo un problema guardando tu información. ¿Podrías intentar de nuevo?\",\n      session_id: response.session_id,\n      response_type: \"error\"\n    }\n  }];\n}"
+      },
+      "id": "format-lead-response",
+      "name": "Format Lead Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format start conversation response\nconst data = $input.all();\nconst response = data[0].json;\n\nif (response.success) {\n  return [{\n    json: {\n      message: response.data.greeting,\n      options: response.data.options,\n      session_id: response.data.session_id,\n      response_type: \"greeting\"\n    }\n  }];\n} else {\n  return [{\n    json: {\n      message: \"¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?\",\n      session_id: response.session_id || $jmespath($json, 'session_id') || uuid(),\n      response_type: \"fallback_greeting\"\n    }\n  }];\n}"
+      },
+      "id": "format-greeting-response",
+      "name": "Format Greeting Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $parameter.api_base_url }}/api/webhooks/n8n/chatbot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "log_interaction"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "user_message",
+              "value": "={{ $json.user_message }}"
+            },
+            {
+              "name": "bot_response",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "interaction_type",
+              "value": "={{ $json.response_type }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.client_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-interaction",
+      "name": "Log Interaction",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "id": "respond-to-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message_type }}",
+              "operation": "equal",
+              "value2": "car_details"
+            }
+          ]
+        }
+      },
+      "id": "if-car-details",
+      "name": "If Car Details",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{ $parameter.api_base_url }}/api/webhooks/n8n/chatbot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "get_car_details"
+            },
+            {
+              "name": "car_id",
+              "value": "={{ $json.car_id }}"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $json.client_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-car-details-api",
+      "name": "Get Car Details API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format car details response\nconst data = $input.all();\nconst response = data[0].json;\n\nif (response.success && !response.data.error) {\n  const car = response.data;\n  \n  return [{\n    json: {\n      message: car.message,\n      car_details: {\n        title: car.title,\n        price: car.price,\n        details: car.details,\n        description: car.description\n      },\n      actions: [\"Agendar cita\", \"Más información\", \"Comparar\"],\n      session_id: response.session_id,\n      response_type: \"car_details\"\n    }\n  }];\n} else {\n  return [{\n    json: {\n      message: response.data?.message || \"Lo siento, ese vehículo ya no está disponible.\",\n      suggestions: [\"Ver otros vehículos\", \"Nueva búsqueda\"],\n      session_id: response.session_id,\n      response_type: \"error\"\n    }\n  }];\n}"
+      },
+      "id": "format-car-details",
+      "name": "Format Car Details",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Default fallback for unhandled message types\nconst input = $input.all();\nconst originalData = input[0].json;\n\nreturn [{\n  json: {\n    message: \"No entendí tu mensaje. ¿Podrías ser más específico? Puedo ayudarte a buscar vehículos o responder preguntas sobre nuestro inventario.\",\n    suggestions: [\n      \"Buscar SUV\",\n      \"Mostrar sedanes\", \n      \"Ver vehículos bajo 300,000\",\n      \"Hablar con asesor\"\n    ],\n    session_id: originalData.session_id,\n    response_type: \"fallback\"\n  }\n}];"
+      },
+      "id": "fallback-response",
+      "name": "Fallback Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 800]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "If Start Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Start Conversation": {
+      "main": [
+        [
+          {
+            "node": "Start Conversation API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Search Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Conversation API": {
+      "main": [
+        [
+          {
+            "node": "Format Greeting Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Search Request": {
+      "main": [
+        [
+          {
+            "node": "Natural Search API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Lead Capture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Natural Search API": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Lead Capture": {
+      "main": [
+        [
+          {
+            "node": "Capture Lead API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Car Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture Lead API": {
+      "main": [
+        [
+          {
+            "node": "Format Lead Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Search Results": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Lead Response": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Greeting Response": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Interaction": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Car Details": {
+      "main": [
+        [
+          {
+            "node": "Get Car Details API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fallback Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Car Details API": {
+      "main": [
+        [
+          {
+            "node": "Format Car Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Car Details": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Response": {
+      "main": [
+        [
+          {
+            "node": "Log Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "car-dealership",
+      "name": "Car Dealership"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}

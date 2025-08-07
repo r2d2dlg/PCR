@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoDealer Premium - Vehículos Usados de Calidad</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1>AutoDealer Premium</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="inventory.html">Inventario</a></li>
+                    <li><a href="analysis.html">Análisis</a></li>
+                    <li><a href="offer.html">Calculadora de Ofertas</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Encuentra tu Vehículo Ideal</h2>
+                <p>Más de 500 vehículos usados certificados con garantía</p>
+                <button class="cta-button">Ver Inventario</button>
+            </div>
+            <div class="hero-image">
+                <div class="car-placeholder">🚗</div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-cards">
+                <div class="card">
+                    <div class="card-icon">✅</div>
+                    <h3>Vehículos Certificados</h3>
+                    <p>Inspección completa de 150 puntos</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💰</div>
+                    <h3>Financiamiento</h3>
+                    <p>Hasta 72 meses con las mejores tasas</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Garantía Extendida</h3>
+                    <p>Protección hasta por 3 años</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>Panel de Control Gerencial (En Vivo)</h2>
+            <div class="dashboard">
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <h3>Prospectos Capturados Hoy</h3>
+                        <div class="kpi-value" id="prospectCount">0</div>
+                    </div>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-widget">
+                        <h3>Vehículos Más Buscados</h3>
+                        <canvas id="vehicleChart"></canvas>
+                    </div>
+                    
+                    <div class="table-widget">
+                        <h3>Prospectos Recientes</h3>
+                        <table id="prospectsTable">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Vehículo de Interés</th>
+                                    <th>Hora</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prospectsTableBody">
+                                <tr class="no-data">
+                                    <td colspan="4">No hay prospectos registrados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <span>Asistente Virtual</span>
+            <button class="close-btn" id="closeChatbot">×</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages"></div>
+        <div class="chatbot-input-container" id="chatbotInputContainer">
+            <input type="text" id="chatbotInput" placeholder="Escribe tu respuesta...">
+            <button id="sendMessage">Enviar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

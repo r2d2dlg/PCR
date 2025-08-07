@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - AutoDealer Premium</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1>AutoDealer Premium</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="inventory.html">Inventario</a></li>
+                    <li><a href="analysis.html">Análisis</a></li>
+                    <li><a href="offer.html">Calculadora de Ofertas</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <h2>Nuestro Inventario</h2>
+            <div class="table-widget">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Año</th>
+                            <th>Precio</th>
+                            <th>Kilometraje</th>
+                            <th>Color</th>
+                            <th>Carrocería</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- Car data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="inventory.js"></script>
+</body>
+</html>
